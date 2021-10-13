@@ -91,15 +91,21 @@ class AviWriter:
 
         self.fourcc = VideoWriter_fourcc(*self.codec)
 
-    def __enter__(self):
+    def open(self):
         self.vid = None
+
+    def close(self):
+        if self.vid is None :
+            warnings.warn("No data has been given, video was not created")
+            return
+        self.vid.release()
+
+    def __enter__(self):
+        self.open()
         return self
 
     def __exit__(self, type, value, traceback):
         #Exception handling here
-        if self.vid is None :
-            warnings.warn("No data has been given, video was not created")
-            return
         self.close()
 
     def write_frame(self,array):
@@ -115,8 +121,7 @@ class AviWriter:
             frame = eval( f"cv2.cvtColor(frame, cv2.COLOR_{self.rgbconv})" )
         self.vid.write(frame)
 
-    def close(self):
-        self.vid.release()
+
 
 
 

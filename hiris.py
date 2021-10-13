@@ -44,10 +44,22 @@ class HirisReader():
         raise EOFError
 
     def close(self):
-        return None
+        pass
 
     def open(self):
         return self
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        #Exception handling here
+        self.close()
+
+    @property
+    def frames_number(self):
+        return sum([ binfile.frames_number for binfile in self.binfiles ])
 
 class HirisSeqFile(dict):
     def __init__(self,file_path):

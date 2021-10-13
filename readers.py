@@ -31,6 +31,14 @@ class AviReader:
         self.path = file_path
         self.cursor = 0
 
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        #Exception handling here
+        self.close()
+
     def open(self):
         self.file_handle = cv2.VideoCapture( self.path ,cv2.IMREAD_GRAYSCALE )
         #width  = int(Handlevid.get(cv2.CAP_PROP_FRAME_WIDTH))

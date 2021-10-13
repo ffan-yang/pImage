@@ -31,6 +31,10 @@ class AutoVideoReader:
     def frames(self):
         yield from self.reader.frames()
 
+    @property
+    def frames_number(self):
+        return self.reader.frames_number
+
 class AutoVideoWriter:
 
     def __init__(self,path,**kwargs):
@@ -39,10 +43,7 @@ class AutoVideoWriter:
         self.writer = selected_writer_class(path, **kwargs)
 
     def __enter__(self):
-        try :
-            self.writer.open()
-        except AttributeError :
-            self.writer.__enter__()
+        self.writer.open()
         return self
 
     def __exit__(self, type, value, traceback):
