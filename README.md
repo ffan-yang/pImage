@@ -2,7 +2,7 @@
  
 Usage : 
 
-**For video compression / modification : **
+**For video compression / modification :**
 
 ```
 import pImage
