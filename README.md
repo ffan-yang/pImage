@@ -4,7 +4,7 @@ Usage :
 
 **For video compression / modification :**
 
-```
+``` python
 import pImage
 
 input_video_path = r"foo/myfoovideo.seq"
