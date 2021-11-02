@@ -38,7 +38,6 @@ class Standard_Converter:
         self.output_path = output_path
         self.kwargs = kwargs
 
-
     def start(self):
         with Pool(processes=3) as pool:
 
@@ -56,7 +55,6 @@ class Standard_Converter:
                     break
         print("\n" + "Conversion done")
 
-
     def msg_parser(self,message):
 
         if message in ("r", "t" ,"w"):
@@ -69,7 +67,6 @@ class Standard_Converter:
             self.max_i = int(message[7:])
         elif len(message) >= 3 and message[:3] == "End" :
             print("\n" + message, end = '', flush=True)
-
 
     def read(self, AutoVideoReader, read_queue , message_queue):
 
