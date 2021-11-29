@@ -34,6 +34,9 @@ class AutoVideoReader:
     @property
     def frames_number(self):
         return self.reader.frames_number
+    
+    def frame(self,frame_nb):
+        return self.reader._get_frame(frame_nb)
 
 class AutoVideoWriter:
 
