@@ -72,7 +72,7 @@ class Standard_Converter:
 
         with AutoVideoReader(self.input_path, **self.kwargs) as vid_read :
             message_queue.put("frameno"+str(vid_read.frames_number))
-            for frame in vid_read.frames():
+            for frame in vid_read.frames_yielder():
                 read_queue.put(frame)
                 message_queue.put("r")
         read_queue.put(None)

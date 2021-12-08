@@ -39,7 +39,7 @@ class HirisReader():
         frame_count = 0
         for index, binfile in enumerate(self.binfiles):
             if frame_count >= frame_id > frame_count + binfile.frames_number :
-                return index, frame_id - offset_frame
+                return index, frame_id - frame_count
             frame_count += binfile.frames_number
         raise EOFError
 
@@ -103,7 +103,7 @@ class HirisBinFile:
         try :
             return os.path.getsize(self.path)
         except Exception as e:
-            raise ValueError(f"Could not read size of file {filepath}: invoked cause : {e}")
+            raise ValueError(f"Could not read size of file {self.path}: invoked cause : {e}")
 
     @property
     def frame_bin_size(self):
@@ -142,7 +142,10 @@ class HirisBinFile:
         return buffer.reshape(int(self.seq_file.get("Height")), int(self.seq_file.get("Width")))
 
 if __name__ == "__main__" :
+    import matplotlib.pyplot as plt
     test = HirisReader(r'F:\\Timothe\\DATA\\BehavioralVideos\\Whisker_Video\\Whisker_Topview\\Expect_3_mush\\Mouse66\\210503_1\\2021-05-03T19.19.19/Trial.seq')
     for index, frame in enumerate(test.frames()):
         print(index)
+        plt.imshow(frame)
+        plt.show()
 

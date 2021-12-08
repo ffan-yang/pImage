@@ -28,15 +28,28 @@ class AutoVideoReader:
     def __exit__(self, type, value, traceback):
         self.reader.close()
 
-    def frames(self):
-        yield from self.reader.frames()
+    def frames_yielder(self,start=None,stop=None):
+        if start is None :
+            yield from self.reader.frames()
+        else :
+            yield from self.reader.frames_span(start,stop)
+
+    def frames(self,start=None,stop=None):
+        return np.moveaxis(np.array(list(self.frames_yielder(start,stop))),0,2)
 
     @property
     def frames_number(self):
         return self.reader.frames_number
     
+    def __getitem__(self,value):
+        if isinstance(value,(list,tuple)) and len(value) == 2:
+            return self.frames(*value)
+        else :
+            return self.reader.frame(value)
+    
     def frame(self,frame_nb):
-        return self.reader._get_frame(frame_nb)
+        return self.reader.frame(frame_nb)
+    
 
 class AutoVideoWriter:
 
@@ -379,7 +392,13 @@ def AVI_ToArray(path,**kwargs):
     return FrameArray
 
 if __name__ == "__main__" :
+    
+    import ffmpeg
+    import matplotlib.pyplot as plt
+    
     with AutoVideoReader( r"C:\Users\Timothe\Desktop\Testzone\Mouse33_2020-07-06T16.15.31.avi" ) as test :
-        print(test.reader)
-        for frame in test.frames():
-            print(frame)
+    #     print(test.reader)
+         for frame in test.frames():
+             print(frame)
+             plt.imshow(frame)
+             plt.show()
