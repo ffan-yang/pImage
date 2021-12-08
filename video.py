@@ -29,12 +29,38 @@ class AutoVideoReader:
         self.reader.close()
 
     def frames_yielder(self,start=None,stop=None):
+        """
+        Use this to get frames one by one in a for loop 
+        (read at the file on frame per iteration so the ram stays clean)
+        used in converters to read on the fly on a separate multiprocessing.
+
+        Args:
+            start (TYPE, optional): First frame index. None if start at frame 0 of the file. Defaults to None.
+            stop (TYPE, optional): Last frame index. None if stops at last frame of the file. Defaults to None.
+
+        Yields:
+            np.array(2D): A frame per iteration in a loop context or a generator.
+
+        """
         if start is None :
             yield from self.reader.frames()
         else :
             yield from self.reader.frames_span(start,stop)
 
     def frames(self,start=None,stop=None):
+        """
+        Wrapping a call to frames_yielder and getting all frames at once, storing them inside a numpy array 
+        (3rd dimension = time)
+        This uses more Ram but has the benefit of accessing the file only once.
+
+        Args:
+            start (TYPE, optional): First frame index. None if start at frame 0 of the file. Defaults to None.
+            stop (TYPE, optional): Last frame index. None if stops at last frame of the file. Defaults to None.
+
+        Returns:
+            np.array(3D): A frame array (3d dimension = time).
+
+        """
         return np.moveaxis(np.array(list(self.frames_yielder(start,stop))),0,2)
 
     @property
@@ -70,8 +96,6 @@ class AutoVideoWriter:
 
     def write(self, frame):
         self.writer.write_frame(frame)
-
-
 
 
 class frames_ToAVI:
