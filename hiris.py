@@ -12,6 +12,7 @@ import re, configparser
 class HirisReader():
 
     def __init__(self,path, **kwargs):
+        filename = os.path.splitext(os.path.split(path)[1])[0]
         def files_match(input_folder, regexp):
             def bool_regexp(input_line,regex,**kwargs):
                 matches = re.finditer(regex, input_line, re.MULTILINE)
@@ -23,7 +24,7 @@ class HirisReader():
 
         self.seqfile = HirisSeqFile(path)
         self.dir = path if os.path.splitext(path)[1]=='' else os.path.dirname(path)
-        binfiles_names = sorted(files_match(self.dir ,r"^Trial_.*\.bin$"))
+        binfiles_names = sorted(files_match(self.dir ,rf"^{filename}.*\.bin$"))
         self.binfiles = [ HirisBinFile(_file_path, self.seqfile) for _file_path in binfiles_names]
 
 
