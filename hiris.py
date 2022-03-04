@@ -9,7 +9,11 @@ import os,sys
 import numpy as np
 import re, configparser
 
-class HirisReader():
+sys.path.append(os.path.dirname(__file__))
+import readers
+
+
+class HirisReader(readers.DefaultReader):
 
     def __init__(self,path, **kwargs):
         filename = os.path.splitext(os.path.split(path)[1])[0]
@@ -28,23 +32,25 @@ class HirisReader():
         self.binfiles = [ HirisBinFile(_file_path, self.seqfile) for _file_path in binfiles_names]
 
 
-    def get_frame(self, frame_id):
+    def _get_frame(self, frame_id):
         index, frame_offset = self.find_frame_binfile(frame_id)
-        return self.binfiles[index].get_image(slice(frame_offset,frame_offset+1,1))[0]
+        return self.binfiles[index].get_frame(slice(frame_offset,frame_offset+1,1))[0]
 
     def frames(self):
         for binfile in self.binfiles :
             yield from binfile.frames()
 
     def find_frame_binfile(self, frame_id):
+        #TODO : make this more efficient so that time is constant whatever the index
         frame_count = 0
         for index, binfile in enumerate(self.binfiles):
-            if frame_count >= frame_id > frame_count + binfile.frames_number :
+            if frame_count <=  frame_id < (frame_count + binfile.frames_number) :
                 return index, frame_id - frame_count
             frame_count += binfile.frames_number
         raise EOFError
 
     def close(self):
+        
         pass
 
     def open(self):
@@ -54,7 +60,7 @@ class HirisReader():
         self.open()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):       
         #Exception handling here
         self.close()
 
@@ -102,13 +108,21 @@ class HirisBinFile:
     @property
     def byte_size(self):
         try :
-            return os.path.getsize(self.path)
+            return self._bytesize
+        except AttributeError :
+            self._bytesize = os.path.getsize(self.path)
+            return self._bytesize
         except Exception as e:
+            
             raise ValueError(f"Could not read size of file {self.path}: invoked cause : {e}")
 
     @property
     def frame_bin_size(self):
-        return self.seq_file.get("FrameBinSize")
+        try :
+            return self._framebinsize 
+        except AttributeError :
+            self._framebinsize  = self.seq_file.get("FrameBinSize")
+            return self._framebinsize 
 
     @property
     def remainder(self):
